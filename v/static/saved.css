@@ -1,0 +1,69 @@
+@import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&display=swap');
+    body {
+    font-family: 'Quicksand',sans-serif;
+    margin: 0px;
+    padding: 0;
+    background-color: #272626;
+    color: #ccc;
+    
+  }
+  .navbar-nav .nav-link:hover {
+        color: #fff;
+        background-color: #343a40;
+    }
+    
+    .audio-item {
+        
+        border: 5px solid #ccc;
+        border-radius: 30px; /* Increase the border-radius value for a rounder rectangle */
+        padding: 20px;
+        margin-bottom: 20px;
+        margin-left: 20px; /* Add margin to the left side */
+        margin-right: 20px;  /* Add margin to the right side */
+        margin-top: 20px;
+    }
+
+    .audio-player {
+        margin-bottom: 10px;
+/*        background-color: #454444;*/
+    }
+
+    .audio-options {
+        display: inline-block;
+        justify-content: space-between;
+    }
+    .delete-audio{
+        padding: 5px 10px;
+        background-color: #454444;
+
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+
+    }
+    .edit-audio {
+        padding: 9px 21px;
+        background-color: #454444;
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+
+
+    }
+    .edit-audio::hover{
+        text-decoration: none;
+    }
+
+    ul#audio-list {
+        
+        list-style-type: none;
+        font-size: 20px;
+        padding: 25px;
+        margin: 0;
+    }
+
+    li.audio-item.deleted {
+        display: none;
+    }
