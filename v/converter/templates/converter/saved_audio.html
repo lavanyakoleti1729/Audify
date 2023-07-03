@@ -1,0 +1,118 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Saved Audios</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="{% static 'saved.css' %}">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light" style="background-color: #454444;font-family: 'Quicksand',sans-serif;
+    " color:white>
+        <a class="navbar-brand" href="#" style="color:white"><strong>Audify</strong></a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav"
+            aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav"  style="color:white">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item active">
+                    <a class="nav-link" href="{% url 'convert_video' %}"  style="color:white">Convert Video<span class="sr-only">(current)</span></a>
+                </li>
+                <li class="nav-item active">
+                    <a class="nav-link" href="#"  style="color:white">Saved Audios<span class="sr-only">(current)</span></a>
+                </li>
+            </ul>
+            <ul class="navbar-nav">
+                {% if user.is_authenticated %}
+                <li class="nav-item">
+                    <span class="navbar-text"  style="color:white">Welcome, {{ user.username }} :)</span>
+                </li>
+                <li class="nav-item" >
+                    <a class="nav-link"  style="color:white" href="{% url 'logout' %}">Logout</a>
+                </li>
+                {% else %}
+                <li class="nav-item"  style="color:white">
+                    <a class="nav-link" href="{% url 'login' %}">Login</a>
+                </li>
+                <li class="nav-item"  style="color:white">
+                    <a class="nav-link" href="{% url 'signup' %}">Sign Up</a>
+                </li>
+                {% endif %}
+            </ul>
+        </div>
+    </nav>
+
+    <ul id="audio-list">
+        <!-- Render the list of saved audios -->
+        {% for audio in audios %}
+            <li>
+                <div class="audio-item">
+                    <div class="audio-player">
+                        <audio controls>
+                            <source src="/{{ audio.audio_path }}" type="audio/mp3">
+                        </audio>
+                    </div>
+                    <div class="audio-info">
+                        <p>Audio File: {{ audio.audio_path.name }}</p>
+                        <p>Date: {{ audio.created_date }}</p>
+                    </div>
+                    <div class="audio-options">
+                        <button class="delete-audio" data-audio-id="{{ audio.id }}">Delete</button>
+                        <a class="edit-audio" href="{% url 'audio_edit' audio_id=audio.id %}">Edit</a>
+                    </div>
+                </div>
+            </li>
+        {% endfor %}
+    </ul>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    <script>
+        // Add event listeners for audio deletion and audio editing
+        const deleteButtons = document.querySelectorAll('.delete-audio');
+        const editButtons = document.querySelectorAll('.edit-audio');
+
+        deleteButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const audioId = button.dataset.audioId;
+
+                if (audioId) {
+                    // Get the CSRF token value from the cookie
+                    const csrftoken = getCookie('csrftoken');
+
+                    // Send AJAX request to delete the audio with the given audioId
+                    fetch(`/delete_audio/${audioId}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': csrftoken
+                        }
+                    })
+                    .then(response => {
+                        if (response.ok) {
+                            // Remove the audio from the UI
+                            button.parentNode.parentNode.remove();
+                        } else {
+                            console.log('Error deleting audio:', response.statusText);
+                        }
+                    })
+                    .catch(error => {
+                        console.log('Error deleting audio:', error);
+                    });
+                } else {
+                    console.log('Error: Invalid audio ID');
+                }
+            });
+        });
+
+        // Function to get the value of a specific cookie
+        function getCookie(name) {
+            const value = `; ${document.cookie}`;
+            const parts = value.split(`; ${name}=`);
+            if (parts.length === 2) return parts.pop().split(';').shift();
+        }
+    </script>
+
+</body>
+</html>
